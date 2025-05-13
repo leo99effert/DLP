@@ -1,11 +1,15 @@
 ﻿bool isShutdownInitiated = false;
+IInput input = new ConsoleInput();
+IOutput output = new ConsoleOutput();
+
 while (!isShutdownInitiated)
 {
-    Console.WriteLine("DLP is running...");
-    Console.WriteLine("Would you like to exit the application?(y/n)");
-    if (Console.ReadLine()!.ToLower()[0] == 'y')
+    output.Send("DLP is running...");
+    output.Send("Would you like to exit the application?(y/n)");
+    if (input.Get().ToLower()[0] == 'y')
     {
         isShutdownInitiated = true;
-        Console.WriteLine("Shutting down DLP...");
+        output.Send("Shutting down DLP...");
     }
 }
+Console.ReadKey();
