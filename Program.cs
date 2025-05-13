@@ -1,15 +1,41 @@
-﻿bool isShutdownInitiated = false;
-IInput input = new ConsoleInput();
+﻿IInput input = new ConsoleInput();
 IOutput output = new ConsoleOutput();
+Session session = new Session();
+bool isShutdownInitiated = false;
+
+output.Display("DLP is running...");
+output.DisplaySession(session);
 
 while (!isShutdownInitiated)
 {
-    output.Send("DLP is running...");
-    output.Send("Would you like to exit the application?(y/n)");
-    if (input.Get().ToLower()[0] == 'y')
+    output.DisplayMenu(session);
+    string action = input.Get();
+    if (action == "1")
     {
+        output.DisplaySession(session);
+    }
+    else if (action == "2")
+    {
+        output.Display("Exiting TPL...");
         isShutdownInitiated = true;
-        output.Send("Shutting down DLP...");
+    }
+    else if (action == "3")
+    {
+        if (session.IsLoggedIn)
+        {
+            session.Logout();
+            output.Display("Logged out.");
+        }
+        else
+        {
+            output.Display("Enter username:");
+            string username = input.Get();
+            session.Login(new User(username));
+        }
+    }
+    else
+    {
+        output.Display("Invalid action. Please try again.");
     }
 }
 Console.ReadKey();
