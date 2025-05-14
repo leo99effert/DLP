@@ -1,4 +1,4 @@
-﻿public class Log
+﻿class Log
 {
     public void Write(string text)
     {
