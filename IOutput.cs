@@ -1,4 +1,4 @@
-﻿interface IOutput
+﻿internal interface IOutput
 {
     public Log ProdLog { get; }
     void Display(string text);

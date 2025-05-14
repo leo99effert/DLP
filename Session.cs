@@ -1,4 +1,4 @@
-﻿class Session
+﻿internal class Session
 {
     public bool IsLoggedIn { get; private set; }
     public User? User { get; set; }

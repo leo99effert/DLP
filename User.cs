@@ -1,4 +1,4 @@
-﻿class User
+﻿internal class User
 {
     public string Username { get; }
     public string Id { get; }

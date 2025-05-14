@@ -1,4 +1,4 @@
-﻿class ConsoleOutput : IOutput
+﻿internal class ConsoleOutput : IOutput
 {
     public Log ProdLog { get; }
     public ConsoleOutput(Log prodLog)

@@ -1,6 +1,6 @@
 ﻿// TODO: change public classes to internal classes
 
-class Application
+internal class Application
 {
     public bool IsShutdownInitiated { get; private set; }
     public IInput Input { get; }

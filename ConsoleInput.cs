@@ -1,4 +1,4 @@
-﻿class ConsoleInput : IInput
+﻿internal class ConsoleInput : IInput
 {
     public Log ProdLog { get; }
 
