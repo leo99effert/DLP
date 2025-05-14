@@ -15,47 +15,90 @@ internal class Application
     }
     public void Run()
     {
-        Output.Display("DLP is running...");
-        Output.DisplaySession(Session);
+        OutputInfoOnApplicationStart();
+        MainLoop();
+        OutputInfoOnApplicationExit();
+    }
+
+    private void MainLoop()
+    {
         while (!IsShutdownInitiated)
         {
-            Output.DisplayMenu(Session);
-            string action = Input.Get();
-            if (action == "1")
-            {
-                Output.DisplaySession(Session);
-            }
-            else if (action == "2")
-            {
-                Output.Display("Exiting TPL...");
-                IsShutdownInitiated = true;
-            }
-            else if (action == "3")
-            {
-                string[] logs = Log.Read(10);
-                Output.Display(string.Join(Environment.NewLine, logs));
-            }
-            else if (action == "4")
-            {
-                if (Session.IsLoggedIn)
-                {
-                    Session.Logout();
-                    Output.Display("Logged out.");
-                }
-                else
-                {
-                    Output.Display("Enter username:");
-                    string username = Input.Get();
-                    Session.Login(new User(username));
-                }
-            }
-            else
-            {
-                Output.Display("Invalid action. Please try again.");
-            }
+            string action = MenuSelection();
+            PerformAction(action);
         }
+    }
+
+    private void PerformAction(string action)
+    {
+        switch (action)
+        {
+            case "1":
+                Output.DisplaySession(Session);
+                break;
+            case "2":
+                ShutDown();
+                break;
+            case "3":
+                Output.Display(Log.ReadJoined(10));
+                break;
+            case "4":
+                ChangeLoginState();
+                break;
+            default:
+                Output.Display("Invalid action. Please try again.");
+                break;
+        }
+    }
+
+    private void ChangeLoginState()
+    {
+        if (Session.IsLoggedIn)
+        {
+            Logout();
+        }
+        else
+        {
+            Login();
+        }
+    }
+
+    private void ShutDown()
+    {
+        Output.Display("Exiting TPL...");
+        IsShutdownInitiated = true;
+    }
+
+    private void Login()
+    {
+        Output.Display("Enter username:");
+        string username = Input.Get();
+        Session.Login(new User(username));
+    }
+
+    private void Logout()
+    {
+        Session.Logout();
+        Output.Display("Logged out.");
+    }
+
+    private string MenuSelection()
+    {
+        Output.DisplayMenu(Session);
+        string action = Input.Get();
+        return action;
+    }
+
+    private void OutputInfoOnApplicationExit()
+    {
         Log.Write("DLP ended");
         Output.Display("Press any key to exit...");
         Console.ReadKey();
+    }
+
+    private void OutputInfoOnApplicationStart()
+    {
+        Output.Display("DLP is running...");
+        Output.DisplaySession(Session);
     }
 }
