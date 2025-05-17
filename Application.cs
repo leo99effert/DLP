@@ -40,9 +40,12 @@ internal class Application
                 ShutDown();
                 break;
             case "3":
-                Output.Display(Log.ReadJoined(10));
+                Output.Display(Log.ReadFromProductionLogAsString(10));
                 break;
             case "4":
+                Output.Display("Not implemented...");
+                break;
+            case "5":
                 ChangeLoginState();
                 break;
             default:
@@ -91,7 +94,7 @@ internal class Application
 
     private void OutputInfoOnApplicationExit()
     {
-        Log.Write("DLP ended");
+        Log.WriteInProductionLog("DLP ended");
         Output.Display("Press any key to exit...");
         Console.ReadKey();
     }

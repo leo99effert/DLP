@@ -16,18 +16,19 @@
         string text = "Enter action:" + Environment.NewLine +
                       "View session (1)" + Environment.NewLine +
                       "Exit TPL (2)" + Environment.NewLine +
-                      "Read prod.log (3)" + Environment.NewLine;
+                      "Read prod.log (3)" + Environment.NewLine +
+                      "Read countries (4)" + Environment.NewLine;
 
         if (session.IsLoggedIn)
         {
-            text += "Logout (4)" + Environment.NewLine;
+            text += "Logout (5)" + Environment.NewLine;
         }
         else
         {
-            text += "Login (4)" + Environment.NewLine;
+            text += "Login (5)" + Environment.NewLine;
         }
         Display(text);
-        ProdLog.Write("Menu is displayed");
+        ProdLog.WriteInProductionLog("Menu is displayed");
     }
 
     public void DisplaySession(Session session)
@@ -40,6 +41,6 @@
                     $"Login time: {session.LoginTime}" + Environment.NewLine;
         }
         Display(text);
-        ProdLog.Write("Session is displayed");
+        ProdLog.WriteInProductionLog("Session is displayed");
     }
 }

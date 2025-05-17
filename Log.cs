@@ -1,18 +1,18 @@
 ﻿internal class Log
 {
-    public void Write(string text)
+    public void WriteInProductionLog(string text)
     {
         string logFilePath = @"log/prod.log";
         string logEntry = $"{DateTime.Now}: {text}";
         File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
     }
 
-    public string ReadJoined(int lines)
+    public string ReadFromProductionLogAsString(int lines)
     {
-        string[] logs = Read(lines);
+        string[] logs = ReadFromProductionLog(lines);
         return string.Join(Environment.NewLine, logs);
     }
-    private string[] Read(int lines)
+    private string[] ReadFromProductionLog(int lines)
     {
         string logFilePath = @"log/prod.log";
         string[] logs = File.ReadAllLines(logFilePath);

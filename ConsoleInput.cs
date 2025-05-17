@@ -10,7 +10,7 @@
     public string Get()
     {
         string input = Console.ReadLine()!;
-        ProdLog.Write($"Input received: {input}");
+        ProdLog.WriteInProductionLog($"Input received: {input}");
         return input;
     }
 }

@@ -1,5 +1,5 @@
 ﻿Log log = new Log();
-log.Write("DLP started");
+log.WriteInProductionLog("DLP started");
 IInput input = new ConsoleInput(log);
 IOutput output = new ConsoleOutput(log);
 Session Session = new Session(log);
