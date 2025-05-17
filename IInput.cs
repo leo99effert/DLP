@@ -2,4 +2,5 @@
 {
     public Log ProdLog { get; }
     string Get();
+    int GetActionIndex();
 }

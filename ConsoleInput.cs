@@ -11,6 +11,14 @@
     {
         string input = Console.ReadLine()!;
         ProdLog.WriteInProductionLog($"Input received: {input}");
+        Console.Clear();
         return input;
+    }
+
+    public int GetActionIndex()
+    {
+        string input = Get();
+        int.TryParse(input, out int result);
+        return result;
     }
 }

@@ -24,28 +24,31 @@ internal class Application
     {
         while (!IsShutdownInitiated)
         {
-            string action = MenuSelection();
+            Action action = MenuSelection();
             PerformAction(action);
         }
     }
 
-    private void PerformAction(string action)
+    private void PerformAction(Action action)
     {
         switch (action)
         {
-            case "1":
+            case Action.Invalid:
+                Output.Display("Invalid action. Please try again.");
+                break;
+            case Action.ViewSession:
                 Output.DisplaySession(Session);
                 break;
-            case "2":
+            case Action.Exit:
                 ShutDown();
                 break;
-            case "3":
+            case Action.ReadProdLog:
                 Output.Display(Log.ReadFromProductionLogAsString(10));
                 break;
-            case "4":
+            case Action.ReadCountries:
                 Output.Display("Not implemented...");
                 break;
-            case "5":
+            case Action.ChangeLoginState:
                 ChangeLoginState();
                 break;
             default:
@@ -85,10 +88,10 @@ internal class Application
         Output.Display("Logged out.");
     }
 
-    private string MenuSelection()
+    private Action MenuSelection()
     {
         Output.DisplayMenu(Session);
-        string action = Input.Get();
+        Action action = (Action)Input.GetActionIndex();
         return action;
     }
 
