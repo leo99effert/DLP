@@ -3,8 +3,19 @@
     public void WriteInProductionLog(string text)
     {
         string logFilePath = @"log/prod.log";
+        int lines = File.ReadAllLines(logFilePath).Length;
+        CreateNewLogFileIfTooBig(logFilePath, lines);
         string logEntry = $"{DateTime.Now}: {text}";
         File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
+    }
+
+    private static void CreateNewLogFileIfTooBig(string logFilePath, int lines)
+    {
+        int maxLines = 500;
+        if (lines > maxLines)
+        {
+            File.Move(logFilePath, @"log/prod_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log");
+        }
     }
 
     public string ReadFromProductionLogAsString(int lines)

@@ -6,6 +6,3 @@ Session Session = new Session(log);
 
 Application application = new Application(input, output, Session);
 application.Run();
-
-
-// TODO new log file if its to long

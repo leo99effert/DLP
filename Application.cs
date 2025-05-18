@@ -52,8 +52,7 @@ internal class Application
                 ChangeLoginState();
                 break;
             default:
-                Output.Display("Invalid action. Please try again.");
-                break;
+                throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
         }
     }
 
@@ -92,6 +91,10 @@ internal class Application
     {
         Output.DisplayMenu(Session);
         Action action = (Action)Input.GetActionIndex();
+        if (!Enum.IsDefined(typeof(Action), action))
+        {
+            action = Action.Invalid;
+        }
         return action;
     }
 
