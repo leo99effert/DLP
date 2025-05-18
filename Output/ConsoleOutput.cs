@@ -6,11 +6,34 @@
         ProdLog = prodLog;
     }
 
-    public void Display(string text)
+    private void Display(string text)
     {
         Console.WriteLine(text + Environment.NewLine);
     }
+    public void DisplayStart()
+    {
+        ProdLog.WriteInProductionLog("DLP started");
+        Display("Welcome to DPL!");
+    }
 
+    public void DisplayExit()
+    {
+        ProdLog.WriteInProductionLog("DLP exited");
+        Display("Exiting TPL...");
+        Console.ReadKey();
+    }
+
+    public void DisplayInvalidAction()
+    {
+        ProdLog.WriteInProductionLog("Invalid action");
+        Display("Invalid action. Please try again.");
+    }
+
+    public void DisplayNotImplemented()
+    {
+        ProdLog.WriteInProductionLog("Not implemented");
+        Display("Not implemented...");
+    }
     public void DisplayMenu(Session session)
     {
         string text = "Enter action:" + Environment.NewLine +
@@ -42,5 +65,22 @@
         }
         Display(text);
         ProdLog.WriteInProductionLog("Session is displayed");
+    }
+
+    public void DisplayProdLog(int lines)
+    {
+        string text = ProdLog.ReadFromProductionLogAsString(lines);
+        Display(text);
+        ProdLog.WriteInProductionLog("Production log is displayed");
+    }
+
+    public void DisplayLoginPrompt()
+    {
+        Display("Enter username:");
+    }
+
+    public void DisplayLoggedOut()
+    {
+        Display("Logged out.");
     }
 }

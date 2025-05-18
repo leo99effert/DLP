@@ -1,6 +1,4 @@
-﻿// TODO: change public classes to internal classes
-
-internal class Application
+﻿internal class Application
 {
     public bool IsShutdownInitiated { get; private set; }
     public IInput Input { get; }
@@ -17,7 +15,6 @@ internal class Application
     {
         OutputInfoOnApplicationStart();
         MainLoop();
-        OutputInfoOnApplicationExit();
     }
 
     private void MainLoop()
@@ -34,7 +31,7 @@ internal class Application
         switch (action)
         {
             case Action.Invalid:
-                Output.Display("Invalid action. Please try again.");
+                Output.DisplayInvalidAction();
                 break;
             case Action.ViewSession:
                 Output.DisplaySession(Session);
@@ -43,10 +40,10 @@ internal class Application
                 ShutDown();
                 break;
             case Action.ReadProdLog:
-                Output.Display(Log.ReadFromProductionLogAsString(10));
+                Output.DisplayProdLog(10);
                 break;
             case Action.ReadCountries:
-                Output.Display("Not implemented...");
+                Output.DisplayNotImplemented();
                 break;
             case Action.ChangeLoginState:
                 ChangeLoginState();
@@ -70,13 +67,13 @@ internal class Application
 
     private void ShutDown()
     {
-        Output.Display("Exiting TPL...");
+        Output.DisplayExit();
         IsShutdownInitiated = true;
     }
 
     private void Login()
     {
-        Output.Display("Enter username:");
+        Output.DisplayLoginPrompt();
         string username = Input.Get();
         Session.Login(new User(username));
     }
@@ -84,7 +81,7 @@ internal class Application
     private void Logout()
     {
         Session.Logout();
-        Output.Display("Logged out.");
+        Output.DisplayLoggedOut();
     }
 
     private Action MenuSelection()
@@ -98,16 +95,8 @@ internal class Application
         return action;
     }
 
-    private void OutputInfoOnApplicationExit()
-    {
-        Log.WriteInProductionLog("DLP ended");
-        Output.Display("Press any key to exit...");
-        Console.ReadKey();
-    }
-
     private void OutputInfoOnApplicationStart()
     {
-        Output.Display("DLP is running...");
-        Output.DisplaySession(Session);
+        Output.DisplayStart();
     }
 }
