@@ -1,6 +1,6 @@
 ﻿internal interface IOutput
 {
-    public Log ProdLog { get; }
+    public Log Log { get; }
     void DisplayStart();
     void DisplayExit();
     void DisplayInvalidAction();

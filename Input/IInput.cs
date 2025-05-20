@@ -1,6 +1,6 @@
 ﻿internal interface IInput
 {
-    public Log ProdLog { get; }
+    public Log Log { get; }
     string Get();
     int GetActionIndex();
 }

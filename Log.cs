@@ -1,8 +1,19 @@
 ﻿internal class Log
 {
-    public void WriteInProductionLog(string text)
+    private Dictionary<LogType, string> FilePath = new Dictionary<LogType, string>
     {
-        string logFilePath = @"log/prod.log";
+        { LogType.Prod, @"log/prod.log" },
+        { LogType.Debug, @"log/debug.log" },
+        { LogType.Error, @"log/error.log" }
+    };
+
+    public void WriteToLog(LogType logType, string text)
+    {
+        string logFilePath = FilePath[logType];
+        if (!File.Exists(logFilePath))
+        {
+            File.WriteAllText(logFilePath, string.Empty);
+        }
         int lines = File.ReadAllLines(logFilePath).Length;
         CreateNewLogFileIfTooBig(logFilePath, lines);
         string logEntry = $"{DateTime.Now}: {text}";
@@ -14,18 +25,21 @@
         int maxLines = 500;
         if (lines > maxLines)
         {
-            File.Move(logFilePath, @"log/prod_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log");
+            File.Move(
+                logFilePath,
+                logFilePath.Insert(logFilePath.Length - 4, "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss"))
+            );
         }
     }
 
-    public string ReadFromProductionLogAsString(int lines)
+    public string ReadLogAsString(LogType logType, int lines)
     {
-        string[] logs = ReadFromProductionLog(lines);
+        string[] logs = ReadLog(logType, lines);
         return string.Join(Environment.NewLine, logs);
     }
-    private string[] ReadFromProductionLog(int lines)
+    private string[] ReadLog(LogType logType, int lines)
     {
-        string logFilePath = @"log/prod.log";
+        string logFilePath = FilePath[logType];
         string[] logs = File.ReadAllLines(logFilePath);
         string[] result = logs.Skip(Math.Max(0, logs.Length - lines)).ToArray();
         return result;

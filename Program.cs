@@ -5,7 +5,3 @@ Session Session = new Session(log);
 
 Application application = new Application(input, output, Session);
 application.Run();
-
-
-// TODO: Handle more than one log type
-// TODO: Create menu dynamically

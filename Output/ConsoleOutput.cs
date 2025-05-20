@@ -1,9 +1,9 @@
 ﻿internal class ConsoleOutput : IOutput
 {
-    public Log ProdLog { get; }
-    public ConsoleOutput(Log prodLog)
+    public Log Log { get; }
+    public ConsoleOutput(Log log)
     {
-        ProdLog = prodLog;
+        Log = log;
     }
 
     private void Display(string text)
@@ -12,26 +12,26 @@
     }
     public void DisplayStart()
     {
-        ProdLog.WriteInProductionLog("DLP started");
+        Log.WriteToLog(LogType.Prod, "DLP started");
         Display("Welcome to DPL!");
     }
 
     public void DisplayExit()
     {
-        ProdLog.WriteInProductionLog("DLP exited");
+        Log.WriteToLog(LogType.Prod, "DLP exited");
         Display("Exiting TPL...");
         Console.ReadKey();
     }
 
     public void DisplayInvalidAction()
     {
-        ProdLog.WriteInProductionLog("Invalid action");
+        Log.WriteToLog(LogType.Prod, "Invalid action");
         Display("Invalid action. Please try again.");
     }
 
     public void DisplayNotImplemented()
     {
-        ProdLog.WriteInProductionLog("Not implemented");
+        Log.WriteToLog(LogType.Prod, "Not implemented");
         Display("Not implemented...");
     }
     public void DisplayMenu(Session session)
@@ -42,7 +42,7 @@
             menu += $"{(int)action} - {action.ToString()}" + Environment.NewLine;
         }
         Display(menu);
-        ProdLog.WriteInProductionLog("Menu is displayed");
+        Log.WriteToLog(LogType.Prod, "Menu is displayed");
     }
 
     public void DisplaySession(Session session)
@@ -55,14 +55,14 @@
                     $"Login time: {session.LoginTime}" + Environment.NewLine;
         }
         Display(text);
-        ProdLog.WriteInProductionLog("Session is displayed");
+        Log.WriteToLog(LogType.Prod, "Session is displayed");
     }
 
     public void DisplayProdLog(int lines)
     {
-        string text = ProdLog.ReadFromProductionLogAsString(lines);
+        string text = Log.ReadLogAsString(LogType.Prod, lines);
         Display(text);
-        ProdLog.WriteInProductionLog("Production log is displayed");
+        Log.WriteToLog(LogType.Prod, "Production log is displayed");
     }
 
     public void DisplayLoginPrompt()

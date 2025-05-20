@@ -1,16 +1,16 @@
 ﻿internal class ConsoleInput : IInput
 {
-    public Log ProdLog { get; }
+    public Log Log { get; }
 
-    public ConsoleInput(Log prodLog)
+    public ConsoleInput(Log log)
     {
-        ProdLog = prodLog;
+        Log = log;
     }
 
     public string Get()
     {
         string input = Console.ReadLine()!;
-        ProdLog.WriteInProductionLog($"Input received: {input}");
+        Log.WriteToLog(LogType.Prod, $"Input received: {input}");
         Console.Clear();
         return input;
     }
