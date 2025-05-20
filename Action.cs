@@ -5,5 +5,6 @@
     Exit = 2,
     ReadProdLog = 3,
     ReadCountries = 4,
-    ChangeLoginState = 5,
+    Login = 5,
+    Logout = 6
 }

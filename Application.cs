@@ -45,23 +45,14 @@
             case Action.ReadCountries:
                 Output.DisplayNotImplemented();
                 break;
-            case Action.ChangeLoginState:
-                ChangeLoginState();
+            case Action.Login:
+                Login();
+                break;
+            case Action.Logout:
+                Logout();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
-        }
-    }
-
-    private void ChangeLoginState()
-    {
-        if (Session.IsLoggedIn)
-        {
-            Logout();
-        }
-        else
-        {
-            Login();
         }
     }
 
@@ -73,6 +64,11 @@
 
     private void Login()
     {
+        if (Session.IsLoggedIn)
+        {
+            Output.DisplayAlreadyLoggedIn(Session.User!);
+            return;
+        }
         Output.DisplayLoginPrompt();
         string username = Input.Get();
         Session.Login(new User(username));
@@ -80,6 +76,11 @@
 
     private void Logout()
     {
+        if (!Session.IsLoggedIn)
+        {
+            Output.DisplayNotLoggedIn();
+            return;
+        }
         Session.Logout();
         Output.DisplayLoggedOut();
     }

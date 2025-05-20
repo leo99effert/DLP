@@ -36,21 +36,12 @@
     }
     public void DisplayMenu(Session session)
     {
-        string text = "Enter action:" + Environment.NewLine +
-                      "View session (1)" + Environment.NewLine +
-                      "Exit TPL (2)" + Environment.NewLine +
-                      "Read prod.log (3)" + Environment.NewLine +
-                      "Read countries (4)" + Environment.NewLine;
-
-        if (session.IsLoggedIn)
+        string menu = "";
+        foreach (Action action in Enum.GetValues(typeof(Action)))
         {
-            text += "Logout (5)" + Environment.NewLine;
+            menu += $"{(int)action} - {action.ToString()}" + Environment.NewLine;
         }
-        else
-        {
-            text += "Login (5)" + Environment.NewLine;
-        }
-        Display(text);
+        Display(menu);
         ProdLog.WriteInProductionLog("Menu is displayed");
     }
 
@@ -82,5 +73,15 @@
     public void DisplayLoggedOut()
     {
         Display("Logged out.");
+    }
+
+    public void DisplayAlreadyLoggedIn(User user)
+    {
+        Display($"{user.Username} already logged in.");
+    }
+
+    public void DisplayNotLoggedIn()
+    {
+        Display("Not logged in.");
     }
 }

@@ -10,4 +10,6 @@
     void DisplayProdLog(int lines);
     void DisplayLoginPrompt();
     void DisplayLoggedOut();
+    void DisplayAlreadyLoggedIn(User user);
+    void DisplayNotLoggedIn();
 }
