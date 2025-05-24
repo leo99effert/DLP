@@ -34,14 +34,14 @@
 
     public string ReadLogAsString(LogType logType, int lines)
     {
-        string[] logs = ReadLog(logType, lines);
+        List<string> logs = ReadLog(logType, lines);
         return string.Join(Environment.NewLine, logs);
     }
-    private string[] ReadLog(LogType logType, int lines)
+    public List<string> ReadLog(LogType logType, int lines)
     {
         string logFilePath = FilePath[logType];
-        string[] logs = File.ReadAllLines(logFilePath);
-        string[] result = logs.Skip(Math.Max(0, logs.Length - lines)).ToArray();
+        List<string> logs = File.ReadAllLines(logFilePath).ToList();
+        List<string> result = logs.Skip(Math.Max(0, logs.Count - lines)).ToList();
         return result;
     }
 }

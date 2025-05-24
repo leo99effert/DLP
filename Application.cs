@@ -5,24 +5,22 @@
     public IOutput Output { get; }
     public Session Session { get; }
     public Log Log { get; } = new Log();
+    public ViewState ViewState { get; private set; } = ViewState.Welcome;
     public Application(IInput input, IOutput output, Session session)
     {
         Input = input;
         Output = output;
         Session = session;
     }
+
     public void Run()
     {
-        OutputInfoOnApplicationStart();
-        MainLoop();
-    }
-
-    private void MainLoop()
-    {
+        Output.DisplayView(ViewState, Session);
         while (!IsShutdownInitiated)
         {
             Action action = MenuSelection();
             PerformAction(action);
+            Output.DisplayView(ViewState, Session);
         }
     }
 
@@ -31,19 +29,20 @@
         switch (action)
         {
             case Action.Invalid:
-                Output.DisplayInvalidAction();
+                ViewState = ViewState.Invalid;
                 break;
             case Action.ViewSession:
-                Output.DisplaySession(Session);
+                ViewState = ViewState.Session;
                 break;
             case Action.Exit:
-                ShutDown();
+                ViewState = ViewState.Exit;
+                IsShutdownInitiated = true;
                 break;
             case Action.ReadProdLog:
-                Output.DisplayProdLog(10);
+                ViewState = ViewState.ProdLog;
                 break;
             case Action.ReadCountries:
-                Output.DisplayNotImplemented();
+                ViewState = ViewState.Countries;
                 break;
             case Action.Login:
                 Login();
@@ -56,19 +55,14 @@
         }
     }
 
-    private void ShutDown()
-    {
-        Output.DisplayExit();
-        IsShutdownInitiated = true;
-    }
-
     private void Login()
     {
         if (Session.IsLoggedIn)
         {
-            Output.DisplayAlreadyLoggedIn(Session.User!);
+            ViewState = ViewState.AlreadyLoggedIn;
             return;
         }
+        ViewState = ViewState.LoggingIn;
         Output.DisplayLoginPrompt();
         string username = Input.Get();
         Session.Login(new User(username));
@@ -78,11 +72,11 @@
     {
         if (!Session.IsLoggedIn)
         {
-            Output.DisplayNotLoggedIn();
+            ViewState = ViewState.NotLoggedIn;
             return;
         }
+        ViewState = ViewState.LoggingOut;
         Session.Logout();
-        Output.DisplayLoggedOut();
     }
 
     private Action MenuSelection()
@@ -94,10 +88,5 @@
             action = Action.Invalid;
         }
         return action;
-    }
-
-    private void OutputInfoOnApplicationStart()
-    {
-        Output.DisplayStart();
     }
 }
