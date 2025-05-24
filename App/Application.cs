@@ -64,8 +64,8 @@
             return;
         }
         ViewState = ViewState.LoggingIn;
-        Interaction.DisplayLoginPrompt();
-        string username = Interaction.Get();
+        Interaction.PromptLogin();
+        string username = Interaction.ReadUsername();
         Session.Login(new User(username));
     }
 

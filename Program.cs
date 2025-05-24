@@ -6,5 +6,7 @@ Application application = new Application(interaction, session);
 application.Run();
 Console.ReadKey();
 
-// TODO: ability to pick which log to see
+// TODO: Make GetActionIndex return action instead of int
+// TODO: Update console design for login
+// TODO: Ability to pick which log to see
 // TODO: Imlement countries view

@@ -127,11 +127,11 @@
         Console.ForegroundColor = _highlightedTextColor;
     }
 
-    public void DisplayLoginPrompt()
+    public void PromptLogin()
     {
         Display(Environment.NewLine + "Enter username:" + Environment.NewLine);
     }
-    public string Get()
+    public string ReadUsername()
     {
         string input = Console.ReadLine()!;
         Console.Clear();
