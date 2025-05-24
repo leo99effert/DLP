@@ -14,13 +14,13 @@
         IsLoggedIn = true;
         User = user;
         LoginTime = DateTime.Now;
-        Log.WriteToLog(LogType.Prod, $"user logged in: {User.Username}");
+        Log.WriteToLog(LogType.Prod, $"User logged in: {User.Username}");
     }
     public void Logout()
     {
         IsLoggedIn = false;
         LoginTime = null;
-        Log.WriteToLog(LogType.Prod, $"user logged out: {User!.Username}");
+        Log.WriteToLog(LogType.Prod, $"User logged out: {User!.Username}");
         User = null;
     }
 }

@@ -46,8 +46,11 @@
                 Logout();
                 break;
             default:
+                Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
                 throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
         }
+        string log = $"Action performed: {action}, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
+        Log.WriteToLog(LogType.Prod, log);
     }
 
     private void Login()

@@ -6,4 +6,3 @@ Application application = new Application(interaction, session);
 application.Run();
 Console.ReadKey();
 
-// TODO: add prod logs

@@ -72,12 +72,6 @@
             Session.IsLoggedIn ? $"Login time: {Session.LoginTime}" : ""
         };
     }
-
-    public void DisplayNotImplemented()
-    {
-        Log.WriteToLog(LogType.Prod, "Not implemented");
-        Display("Not implemented..." + Environment.NewLine);
-    }
     private void DisplayMenu(Session session)
     {
         DisplayMenuTop();
@@ -140,25 +134,9 @@
     {
         Display(Environment.NewLine + "Enter username:" + Environment.NewLine);
     }
-
-    public void DisplayLoggedOut()
-    {
-        Display("Logged out." + Environment.NewLine);
-    }
-
-    public void DisplayAlreadyLoggedIn(User user)
-    {
-        Display($"{user.Username} already logged in." + Environment.NewLine);
-    }
-
-    public void DisplayNotLoggedIn()
-    {
-        Display("Not logged in." + Environment.NewLine);
-    }
     public string Get()
     {
         string input = Console.ReadLine()!;
-        Log.WriteToLog(LogType.Prod, $"Input received: {input}");
         Console.Clear();
         return input;
     }

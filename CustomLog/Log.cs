@@ -16,7 +16,7 @@
         }
         int lines = File.ReadAllLines(logFilePath).Length;
         CreateNewLogFileIfTooBig(logFilePath, lines);
-        string logEntry = $"{DateTime.Now}: {text}";
+        string logEntry = $"{DateTime.Now} {text}";
         File.AppendAllText(logFilePath, logEntry + Environment.NewLine);
     }
 

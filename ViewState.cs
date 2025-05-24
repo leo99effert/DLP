@@ -7,6 +7,6 @@
     Countries,
     LoggingIn,
     AlreadyLoggedIn,
-    NotLoggedIn,
     LoggingOut,
+    NotLoggedIn,
 }
