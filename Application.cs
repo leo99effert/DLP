@@ -1,26 +1,24 @@
 ﻿internal class Application
 {
     public bool IsShutdownInitiated { get; private set; }
-    public IInput Input { get; }
-    public IOutput Output { get; }
+    public IInteraction Interaction { get; }
     public Session Session { get; }
     public Log Log { get; } = new Log();
     public ViewState ViewState { get; private set; } = ViewState.Welcome;
-    public Application(IInput input, IOutput output, Session session)
+    public Application(IInteraction interaction, Session session)
     {
-        Input = input;
-        Output = output;
+        Interaction = interaction;
         Session = session;
     }
 
     public void Run()
     {
-        Output.DisplayView(ViewState, Session);
+        Interaction.DisplayView(ViewState, Session);
         while (!IsShutdownInitiated)
         {
             Action action = MenuSelection();
             PerformAction(action);
-            Output.DisplayView(ViewState, Session);
+            Interaction.DisplayView(ViewState, Session);
         }
     }
 
@@ -63,8 +61,8 @@
             return;
         }
         ViewState = ViewState.LoggingIn;
-        Output.DisplayLoginPrompt();
-        string username = Input.Get();
+        Interaction.DisplayLoginPrompt();
+        string username = Interaction.Get();
         Session.Login(new User(username));
     }
 
@@ -81,8 +79,7 @@
 
     private Action MenuSelection()
     {
-        Output.DisplayMenu(Session);
-        Action action = (Action)Input.GetActionIndex();
+        Action action = (Action)Interaction.GetActionIndex(Session);
         if (!Enum.IsDefined(typeof(Action), action))
         {
             action = Action.Invalid;

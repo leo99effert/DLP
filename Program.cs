@@ -1,8 +1,7 @@
 ﻿Log log = new Log();
 Session session = new Session(log);
-IInput input = new ConsoleInput(log);
-IOutput output = new ConsoleOutput(log, session);
+IInteraction interaction = new ConsoleInteraction(log, session);
 
-Application application = new Application(input, output, session);
+Application application = new Application(interaction, session);
 application.Run();
 Console.ReadKey();

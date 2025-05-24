@@ -1,4 +1,4 @@
-﻿internal class ConsoleOutput : IOutput
+﻿internal class ConsoleInteraction : IInteraction
 {
     public Log Log { get; }
     public int CurrentMenuOption { get; private set; } = 0;
@@ -9,7 +9,7 @@
     private const int ViewWidth = 80;
     private const int ViewHeight = 12;
 
-    public ConsoleOutput(Log log, Session session)
+    public ConsoleInteraction(Log log, Session session)
     {
         Log = log;
         Session = session;
@@ -83,7 +83,7 @@
         Log.WriteToLog(LogType.Prod, "Not implemented");
         Display("Not implemented..." + Environment.NewLine);
     }
-    public void DisplayMenu(Session session)
+    private void DisplayMenu(Session session)
     {
         foreach (Action action in Enum.GetValues(typeof(Action)))
         {
@@ -130,5 +130,57 @@
     public void DisplayNotLoggedIn()
     {
         Display("Not logged in." + Environment.NewLine);
+    }
+    public string Get()
+    {
+        string input = Console.ReadLine()!;
+        Log.WriteToLog(LogType.Prod, $"Input received: {input}");
+        Console.Clear();
+        return input;
+    }
+
+    public int GetActionIndex(Session session)
+    {
+        while (true)
+        {
+            Console.SetCursorPosition(0, ViewHeight + 2);
+            DisplayMenu(session);
+            ConsoleNavigateAction navigateAction = GetConsoleNavigateAction();
+            if (navigateAction == ConsoleNavigateAction.PickOption)
+            {
+                return CurrentMenuOption;
+            }
+            else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
+            {
+                CurrentMenuOption--;
+            }
+            else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
+            {
+                CurrentMenuOption--;
+            }
+            else if (navigateAction == ConsoleNavigateAction.Right && (CurrentMenuOption < Enum.GetNames(typeof(Action)).Length - 1))
+            {
+                CurrentMenuOption++;
+            }
+        }
+    }
+    public ConsoleNavigateAction GetConsoleNavigateAction()
+    {
+        while (true)
+        {
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            if (keyInfo.Key == ConsoleKey.LeftArrow)
+            {
+                return ConsoleNavigateAction.Left;
+            }
+            if (keyInfo.Key == ConsoleKey.RightArrow)
+            {
+                return ConsoleNavigateAction.Right;
+            }
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                return ConsoleNavigateAction.PickOption;
+            }
+        }
     }
 }

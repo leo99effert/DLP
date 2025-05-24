@@ -31,12 +31,6 @@
             );
         }
     }
-
-    public string ReadLogAsString(LogType logType, int lines)
-    {
-        List<string> logs = ReadLog(logType, lines);
-        return string.Join(Environment.NewLine, logs);
-    }
     public List<string> ReadLog(LogType logType, int lines)
     {
         string logFilePath = FilePath[logType];
