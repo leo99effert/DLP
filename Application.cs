@@ -26,18 +26,14 @@
     {
         switch (action)
         {
+            case Action.ReadCountries:
+                ViewState = ViewState.Countries;
+                break;
             case Action.ViewSession:
                 ViewState = ViewState.Session;
                 break;
-            case Action.Exit:
-                ViewState = ViewState.Exit;
-                IsShutdownInitiated = true;
-                break;
             case Action.ReadProdLog:
                 ViewState = ViewState.ProdLog;
-                break;
-            case Action.ReadCountries:
-                ViewState = ViewState.Countries;
                 break;
             case Action.Login:
                 Login();
@@ -45,12 +41,19 @@
             case Action.Logout:
                 Logout();
                 break;
+            case Action.Exit:
+                ViewState = ViewState.Exit;
+                IsShutdownInitiated = true;
+                break;
             default:
                 Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
                 throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
         }
-        string log = $"Action performed: {action}, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
-        Log.WriteToLog(LogType.Prod, log);
+        if (action != Action.Login && action != Action.Logout)
+        {
+            string log = $"Action performed: {action}, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
+            Log.WriteToLog(LogType.Prod, log);
+        }
     }
 
     private void Login()

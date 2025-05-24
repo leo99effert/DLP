@@ -2,24 +2,21 @@
 {
     public Log Log { get; }
     public int CurrentMenuOption { get; private set; } = 0;
-    public Session Session { get; private set; }
     private int _actionDisplayLength = Enum.GetNames(typeof(Action)).Max(action => action.Length);
     private ConsoleColor _defaultTextColor = Console.ForegroundColor;
     private ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
     private int ViewHeight = 12;
     private int ViewWidth = (Enum.GetNames(typeof(Action)).Max(action => action.Length) + 2) * Enum.GetNames(typeof(Action)).Length - 2;
 
-    public ConsoleInteraction(Log log, Session session)
+    public ConsoleInteraction(Log log)
     {
         Log = log;
-        Session = session;
     }
     public void DisplayView(ViewState viewState, Session session)
     {
-        Session = session;
         Console.Clear();
         Console.WriteLine($"┌{new string('─', ViewWidth)}┐");
-        List<string> lines = GetLinesToDisplay(viewState);
+        List<string> lines = GetLinesToDisplay(viewState, session);
         for (int i = 0; i < ViewHeight; i++)
         {
             if (i < lines.Count)
@@ -35,17 +32,17 @@
         Console.WriteLine($"└{new string('─', ViewWidth)}┘");
     }
 
-    private List<string> GetLinesToDisplay(ViewState viewState) => viewState switch
+    private List<string> GetLinesToDisplay(ViewState viewState, Session session) => viewState switch
     {
         ViewState.Welcome => WelcomeText(),
-        ViewState.Exit => ExitText(),
-        ViewState.Session => SessionText(),
-        ViewState.ProdLog => ProdLogText(10),
         ViewState.Countries => CountriesText(),
-        ViewState.AlreadyLoggedIn => AlreadyLoggedInText(),
-        ViewState.NotLoggedIn => NotLoggedInText(),
+        ViewState.Session => SessionText(session),
+        ViewState.ProdLog => ProdLogText(10),
         ViewState.LoggingIn => LoggingInText(),
+        ViewState.AlreadyLoggedIn => AlreadyLoggedInText(session),
         ViewState.LoggingOut => LoggingOutText(),
+        ViewState.NotLoggedIn => NotLoggedInText(),
+        ViewState.Exit => ExitText(),
         _ => new List<string> { "Unknown view state." }
     };
 
@@ -54,24 +51,24 @@
         Console.Write(text);
     }
     private List<string> WelcomeText() => new List<string> { "Welcome to DLP!" };
-    private List<string> ExitText() => new List<string> { "Exiting DLP..." };
-    private List<string> AlreadyLoggedInText() => new List<string> { $"{Session.User!.Username} already logged in." };
-    private List<string> NotLoggedInText() => new List<string> { "Not logged in." };
-    private List<string> LoggingInText() => new List<string> { "Logging in..." };
-    private List<string> LoggingOutText() => new List<string> { "Loggin out..." };
     private List<string> CountriesText() => new List<string> { "Not implemented yet" };
-    private List<string> ProdLogText(int lines) => Log.ReadLog(LogType.Prod, lines);
-
-    private List<string> SessionText()
+    private List<string> SessionText(Session session)
     {
         return new List<string>
         {
-            $"Session start: {Session.SessionStartTime}",
-            Session.IsLoggedIn ? $"Username: {Session.User?.Username}" : "Not logged in",
-            Session.IsLoggedIn ? $"User ID: {Session.User?.Id}" : "",
-            Session.IsLoggedIn ? $"Login time: {Session.LoginTime}" : ""
+            $"Session start: {session.SessionStartTime}",
+            session.IsLoggedIn ? $"Username: {session.User?.Username}" : "Not logged in",
+            session.IsLoggedIn ? $"User ID: {session.User?.Id}" : "",
+            session.IsLoggedIn ? $"Login time: {session.LoginTime}" : ""
         };
     }
+    private List<string> ProdLogText(int lines) => Log.ReadLog(LogType.Prod, lines);
+    private List<string> LoggingInText() => new List<string> { "Logging in..." };
+    private List<string> AlreadyLoggedInText(Session session) => new List<string> { $"{session.User!.Username} already logged in." };
+    private List<string> LoggingOutText() => new List<string> { "Loggin out..." };
+    private List<string> NotLoggedInText() => new List<string> { "Not logged in." };
+    private List<string> ExitText() => new List<string> { "Exiting DLP..." };
+
     private void DisplayMenu(Session session)
     {
         DisplayMenuTop();
