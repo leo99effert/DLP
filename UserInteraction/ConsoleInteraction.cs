@@ -3,11 +3,11 @@
     public Log Log { get; }
     public int CurrentMenuOption { get; private set; } = 0;
     public Session Session { get; private set; }
-    private int _actionDisplayLength = Enum.GetNames(typeof(Action)).Max(action => action.Length) + 4;
+    private int _actionDisplayLength = Enum.GetNames(typeof(Action)).Max(action => action.Length);
     private ConsoleColor _defaultTextColor = Console.ForegroundColor;
     private ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
-    private const int ViewWidth = 80;
-    private const int ViewHeight = 12;
+    private int ViewHeight = 12;
+    private int ViewWidth = (Enum.GetNames(typeof(Action)).Max(action => action.Length) + 2) * Enum.GetNames(typeof(Action)).Length - 2;
 
     public ConsoleInteraction(Log log, Session session)
     {
@@ -44,9 +44,8 @@
         ViewState.Countries => CountriesText(),
         ViewState.AlreadyLoggedIn => AlreadyLoggedInText(),
         ViewState.NotLoggedIn => NotLoggedInText(),
-        ViewState.LoggingIn => new List<string> { "Logging in..." },
-        ViewState.LoggingOut => new List<string> { "Logging out..." },
-        ViewState.Invalid => new List<string> { "Invalid action." },
+        ViewState.LoggingIn => LoggingInText(),
+        ViewState.LoggingOut => LoggingOutText(),
         _ => new List<string> { "Unknown view state." }
     };
 
@@ -58,6 +57,8 @@
     private List<string> ExitText() => new List<string> { "Exiting DLP..." };
     private List<string> AlreadyLoggedInText() => new List<string> { $"{Session.User!.Username} already logged in." };
     private List<string> NotLoggedInText() => new List<string> { "Not logged in." };
+    private List<string> LoggingInText() => new List<string> { "Logging in..." };
+    private List<string> LoggingOutText() => new List<string> { "Loggin out..." };
     private List<string> CountriesText() => new List<string> { "Not implemented yet" };
     private List<string> ProdLogText(int lines) => Log.ReadLog(LogType.Prod, lines);
 
@@ -72,12 +73,6 @@
         };
     }
 
-    public void DisplayInvalidAction()
-    {
-        Log.WriteToLog(LogType.Prod, "Invalid action");
-        Display("Invalid action. Please try again." + Environment.NewLine);
-    }
-
     public void DisplayNotImplemented()
     {
         Log.WriteToLog(LogType.Prod, "Not implemented");
@@ -85,22 +80,51 @@
     }
     private void DisplayMenu(Session session)
     {
+        DisplayMenuTop();
+        Display(Environment.NewLine);
+        DisplayMenuMiddle(session);
+        Display(Environment.NewLine);
+        DisplayMenuBottom();
+    }
+    private void DisplayMenuTop()
+    {
         foreach (Action action in Enum.GetValues(typeof(Action)))
         {
             if (((int)action) == CurrentMenuOption)
             {
-                Log.WriteToLog(LogType.Debug, $"{(int)action}");
                 ApplyHighlightTextColor();
             }
-            string displayAction = "";
-            displayAction += "┌" + new string('─', _actionDisplayLength) + "┐" + Environment.NewLine;
-            string displayText = ($"{(int)action} - {action.ToString()}").PadRight(_actionDisplayLength);
-            displayAction += $"│{displayText}│" + Environment.NewLine;
-            displayAction += "└" + new string('─', _actionDisplayLength) + "┘" + Environment.NewLine;
-            Display(displayAction);
+            string text = "┌" + new string('─', _actionDisplayLength) + "┐";
+            Display(text);
             ApplyDefaultTextColor();
         }
-        Log.WriteToLog(LogType.Prod, "Menu is displayed");
+    }
+    private void DisplayMenuMiddle(Session session)
+    {
+        foreach (Action action in Enum.GetValues(typeof(Action)))
+        {
+            if (((int)action) == CurrentMenuOption)
+            {
+                ApplyHighlightTextColor();
+            }
+            string displayAction = action.ToString().PadRight(_actionDisplayLength);
+            string text = $"│{displayAction}│";
+            Display(text);
+            ApplyDefaultTextColor();
+        }
+    }
+    private void DisplayMenuBottom()
+    {
+        foreach (Action action in Enum.GetValues(typeof(Action)))
+        {
+            if (((int)action) == CurrentMenuOption)
+            {
+                ApplyHighlightTextColor();
+            }
+            string text = "└" + new string('─', _actionDisplayLength) + "┘";
+            Display(text);
+            ApplyDefaultTextColor();
+        }
     }
     private void ApplyDefaultTextColor()
     {
@@ -114,7 +138,7 @@
 
     public void DisplayLoginPrompt()
     {
-        Display("Enter username:" + Environment.NewLine);
+        Display(Environment.NewLine + "Enter username:" + Environment.NewLine);
     }
 
     public void DisplayLoggedOut()

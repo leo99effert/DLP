@@ -5,3 +5,5 @@ IInteraction interaction = new ConsoleInteraction(log, session);
 Application application = new Application(interaction, session);
 application.Run();
 Console.ReadKey();
+
+// TODO: add prod logs

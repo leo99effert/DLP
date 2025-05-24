@@ -2,7 +2,6 @@
 {
     Welcome,
     Exit,
-    Invalid,
     Session,
     ProdLog,
     Countries,

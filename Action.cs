@@ -1,10 +1,9 @@
 ﻿internal enum Action
 {
-    ViewSession,
-    Exit,
-    ReadProdLog,
     ReadCountries,
+    ViewSession,
+    ReadProdLog,
     Login,
     Logout,
-    Invalid,
+    Exit,
 }

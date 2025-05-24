@@ -26,9 +26,6 @@
     {
         switch (action)
         {
-            case Action.Invalid:
-                ViewState = ViewState.Invalid;
-                break;
             case Action.ViewSession:
                 ViewState = ViewState.Session;
                 break;
@@ -82,7 +79,8 @@
         Action action = (Action)Interaction.GetActionIndex(Session);
         if (!Enum.IsDefined(typeof(Action), action))
         {
-            action = Action.Invalid;
+            Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
+            throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
         }
         return action;
     }
