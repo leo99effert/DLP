@@ -6,3 +6,5 @@ Application application = new Application(interaction, session);
 application.Run();
 Console.ReadKey();
 
+// TODO: ability to pick which log to see
+// TODO: Imlement countries view

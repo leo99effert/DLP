@@ -1,7 +1,7 @@
 ﻿internal class ConsoleInteraction : IInteraction
 {
     public Log Log { get; }
-    public int CurrentMenuOption { get; private set; } = 0;
+    public int CurrentMenuOption { get; private set; }
     private int _actionDisplayLength = Enum.GetNames(typeof(Action)).Max(action => action.Length);
     private ConsoleColor _defaultTextColor = Console.ForegroundColor;
     private ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
