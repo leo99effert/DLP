@@ -129,9 +129,28 @@
 
     public void PromptLogin()
     {
+        ClearViewWindow();
         HideMenu();
         Console.SetCursorPosition(1, 1);
         Display("Enter username: ");
+    }
+
+    private void ClearViewWindow()
+    {
+        int menuLeftPosition = 1;
+        int menuTopPosition = 1;
+        int menuHeight = ViewHeight;
+        int menuWidth = ViewWidth;
+        Console.SetCursorPosition(menuLeftPosition, menuTopPosition);
+
+        for (int i = 0; i < menuHeight; i++)
+        {
+            Console.SetCursorPosition(1, menuTopPosition + i);
+            for (int j = 0; j < menuWidth; j++)
+            {
+                Display(" ");
+            }
+        }
     }
 
     private void HideMenu()

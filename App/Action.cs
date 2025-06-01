@@ -2,7 +2,7 @@
 {
     ReadCountries,
     ViewSession,
-    ReadProdLog,
+    ReadLog,
     Login,
     Logout,
     Exit,

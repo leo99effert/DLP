@@ -8,3 +8,5 @@ Console.ReadKey();
 
 // TODO: Ability to pick which log to see
 // TODO: Imlement countries view
+// TODO: Remove camelCase from menu actions
+// TODO: login failed if empty username or with whitespace

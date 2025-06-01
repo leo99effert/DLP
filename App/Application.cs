@@ -5,6 +5,12 @@
     public Session Session { get; }
     public Log Log { get; } = new Log();
     public ViewState ViewState { get; private set; } = ViewState.Welcome;
+    public List<Action> ActionsThatRequireSubActions { get; set; } = new List<Action>
+    {
+        //Action.ReadLog,
+        Action.Login,
+        Action.Logout
+    };
     public Application(IInteraction interaction, Session session)
     {
         Interaction = interaction;
@@ -32,7 +38,7 @@
             case Action.ViewSession:
                 ViewState = ViewState.Session;
                 break;
-            case Action.ReadProdLog:
+            case Action.ReadLog:
                 ViewState = ViewState.ProdLog;
                 break;
             case Action.Login:
@@ -49,7 +55,7 @@
                 Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
                 throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
         }
-        if (action != Action.Login && action != Action.Logout)
+        if (!ActionsThatRequireSubActions.Contains(action))
         {
             string log = $"Action performed: {action}, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
             Log.WriteToLog(LogType.Prod, log);
