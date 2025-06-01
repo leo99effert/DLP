@@ -129,8 +129,29 @@
 
     public void PromptLogin()
     {
-        Display(Environment.NewLine + "Enter username:" + Environment.NewLine);
+        HideMenu();
+        Console.SetCursorPosition(1, 1);
+        Display("Enter username: ");
     }
+
+    private void HideMenu()
+    {
+        int menuLeftPosition = 0;
+        int menuTopPosition = ViewHeight + 2;
+        int menuHeight = 3;
+        int menuWidth = ViewWidth + 1;
+        Console.SetCursorPosition(menuLeftPosition, menuTopPosition);
+
+        for (int i = 0; i < menuHeight; i++)
+        {
+            for (int j = 0; j <= menuWidth; j++)
+            {
+                Display(" ");
+            }
+            Display(Environment.NewLine);
+        }
+    }
+
     public string ReadUsername()
     {
         string input = Console.ReadLine()!;
