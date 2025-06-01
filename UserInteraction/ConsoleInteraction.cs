@@ -138,7 +138,7 @@
         return input;
     }
 
-    public int GetActionIndex(Session session)
+    public Action GetAction(Session session)
     {
         while (true)
         {
@@ -147,7 +147,7 @@
             ConsoleNavigateAction navigateAction = GetConsoleNavigateAction();
             if (navigateAction == ConsoleNavigateAction.PickOption)
             {
-                return CurrentMenuOption;
+                return (Action)CurrentMenuOption;
             }
             else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
             {

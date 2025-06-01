@@ -82,7 +82,7 @@
 
     private Action MenuSelection()
     {
-        Action action = (Action)Interaction.GetActionIndex(Session);
+        Action action = (Action)Interaction.GetAction(Session);
         if (!Enum.IsDefined(typeof(Action), action))
         {
             Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
