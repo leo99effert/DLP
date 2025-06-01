@@ -141,16 +141,7 @@
         int menuTopPosition = 1;
         int menuHeight = ViewHeight;
         int menuWidth = ViewWidth;
-        Console.SetCursorPosition(menuLeftPosition, menuTopPosition);
-
-        for (int i = 0; i < menuHeight; i++)
-        {
-            Console.SetCursorPosition(1, menuTopPosition + i);
-            for (int j = 0; j < menuWidth; j++)
-            {
-                Display(" ");
-            }
-        }
+        ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
     }
 
     private void HideMenu()
@@ -158,16 +149,20 @@
         int menuLeftPosition = 0;
         int menuTopPosition = ViewHeight + 2;
         int menuHeight = 3;
-        int menuWidth = ViewWidth + 1;
-        Console.SetCursorPosition(menuLeftPosition, menuTopPosition);
+        int menuWidth = ViewWidth + 2;
+        ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
+    }
 
-        for (int i = 0; i < menuHeight; i++)
+    private void ClearSection(int left, int top, int height, int width)
+    {
+        Console.SetCursorPosition(left, top);
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j <= menuWidth; j++)
+            Console.SetCursorPosition(left, top + i);
+            for (int j = 0; j < width; j++)
             {
                 Display(" ");
             }
-            Display(Environment.NewLine);
         }
     }
 
