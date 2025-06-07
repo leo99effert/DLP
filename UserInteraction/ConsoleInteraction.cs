@@ -37,7 +37,9 @@
         ViewState.Welcome => WelcomeText(),
         ViewState.Countries => CountriesText(),
         ViewState.Session => SessionText(session),
-        ViewState.ProdLog => ProdLogText(10),
+        ViewState.ProdLog => LogText(LogType.Prod, 10),
+        ViewState.DebugLog => LogText(LogType.Debug, 10),
+        ViewState.ErrorLog => LogText(LogType.Error, 10),
         ViewState.LoggingIn => LoggingInText(),
         ViewState.AlreadyLoggedIn => AlreadyLoggedInText(session),
         ViewState.LoggingOut => LoggingOutText(),
@@ -62,26 +64,29 @@
             session.IsLoggedIn ? $"Login time: {session.LoginTime}" : ""
         };
     }
-    private List<string> ProdLogText(int lines) => Log.ReadLog(LogType.Prod, lines);
+    private List<string> LogText(LogType logType, int lines) => Log.ReadLog(logType, lines);
     private List<string> LoggingInText() => new List<string> { "Logging in..." };
     private List<string> AlreadyLoggedInText(Session session) => new List<string> { $"{session.User!.Username} already logged in." };
     private List<string> LoggingOutText() => new List<string> { "Loggin out..." };
     private List<string> NotLoggedInText() => new List<string> { "Not logged in." };
     private List<string> ExitText() => new List<string> { "Exiting DLP..." };
 
-    private void DisplayMenu(Session session)
+    private void DisplayMenu<T>() where T : Enum
     {
-        DisplayMenuTop();
+        HideMenu();
+        DisplayMenuTop<T>();
         Display(Environment.NewLine);
-        DisplayMenuMiddle(session);
+        DisplayMenuMiddle<T>();
         Display(Environment.NewLine);
-        DisplayMenuBottom();
+        DisplayMenuBottom<T>();
     }
-    private void DisplayMenuTop()
+
+    private void DisplayMenuTop<T>() where T : Enum
     {
-        foreach (Action action in Enum.GetValues(typeof(Action)))
+        Console.SetCursorPosition(0, ViewHeight + 2);
+        foreach (T value in Enum.GetValues(typeof(T)))
         {
-            if (((int)action) == CurrentMenuOption)
+            if (Convert.ToInt32(value) == CurrentMenuOption)
             {
                 ApplyHighlightTextColor();
             }
@@ -90,25 +95,25 @@
             ApplyDefaultTextColor();
         }
     }
-    private void DisplayMenuMiddle(Session session)
+    private void DisplayMenuMiddle<T>() where T : Enum
     {
-        foreach (Action action in Enum.GetValues(typeof(Action)))
+        foreach (T value in Enum.GetValues(typeof(T)))
         {
-            if (((int)action) == CurrentMenuOption)
+            if (Convert.ToInt32(value) == CurrentMenuOption)
             {
                 ApplyHighlightTextColor();
             }
-            string displayAction = action.ToString().PadRight(_actionDisplayLength);
+            string displayAction = value.ToString().PadRight(_actionDisplayLength);
             string text = $"│{displayAction}│";
             Display(text);
             ApplyDefaultTextColor();
         }
     }
-    private void DisplayMenuBottom()
+    private void DisplayMenuBottom<T>() where T : Enum
     {
-        foreach (Action action in Enum.GetValues(typeof(Action)))
+        foreach (T value in Enum.GetValues(typeof(T)))
         {
-            if (((int)action) == CurrentMenuOption)
+            if (Convert.ToInt32(value) == CurrentMenuOption)
             {
                 ApplyHighlightTextColor();
             }
@@ -173,16 +178,16 @@
         return input;
     }
 
-    public Action GetAction(Session session)
+    public T GetInput<T>() where T : Enum
     {
         while (true)
         {
             Console.SetCursorPosition(0, ViewHeight + 2);
-            DisplayMenu(session);
+            DisplayMenu<T>();
             ConsoleNavigateAction navigateAction = GetConsoleNavigateAction();
             if (navigateAction == ConsoleNavigateAction.PickOption)
             {
-                return (Action)CurrentMenuOption;
+                return (T)Enum.ToObject(typeof(T), CurrentMenuOption);
             }
             else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
             {
@@ -192,7 +197,7 @@
             {
                 CurrentMenuOption--;
             }
-            else if (navigateAction == ConsoleNavigateAction.Right && (CurrentMenuOption < Enum.GetNames(typeof(Action)).Length - 1))
+            else if (navigateAction == ConsoleNavigateAction.Right && (CurrentMenuOption < Enum.GetNames(typeof(T)).Length - 1))
             {
                 CurrentMenuOption++;
             }

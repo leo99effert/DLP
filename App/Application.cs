@@ -22,7 +22,7 @@
         Interaction.DisplayView(ViewState, Session);
         while (!IsShutdownInitiated)
         {
-            Action action = MenuSelection();
+            Action action = MenuSelection<Action>();
             PerformAction(action);
             Interaction.DisplayView(ViewState, Session);
         }
@@ -39,7 +39,7 @@
                 ViewState = ViewState.Session;
                 break;
             case Action.ReadLog:
-                ViewState = ViewState.ProdLog;
+                ViewLog();
                 break;
             case Action.Login:
                 Login();
@@ -86,14 +86,33 @@
         Session.Logout();
     }
 
-    private Action MenuSelection()
+    private T MenuSelection<T>() where T : Enum
     {
-        Action action = Interaction.GetAction(Session);
-        if (!Enum.IsDefined(typeof(Action), action))
+        T value = Interaction.GetInput<T>();
+        if (!Enum.IsDefined(typeof(T), value))
         {
-            Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
-            throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
+            Log.WriteToLog(LogType.Error, $"Invalid action selected: {value}");
+            throw new ArgumentOutOfRangeException(nameof(value), value, $"Action {value} was not found");
         }
-        return action;
+        return value;
+    }
+
+    private void ViewLog()
+    {
+        LogType logtype = MenuSelection<LogType>();
+        switch (logtype)
+        {
+            case LogType.Prod:
+                ViewState = ViewState.ProdLog;
+                break;
+            case LogType.Debug:
+                ViewState = ViewState.DebugLog;
+                break;
+            case LogType.Error:
+                ViewState = ViewState.ErrorLog;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(logtype), logtype, $"Logtype {logtype} was not found");
+        }
     }
 }

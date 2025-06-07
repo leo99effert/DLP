@@ -34,6 +34,10 @@
     public List<string> ReadLog(LogType logType, int lines)
     {
         string logFilePath = FilePath[logType];
+        if (!File.Exists(logFilePath))
+        {
+            return new List<string> { "Log is empty..." };
+        }
         List<string> logs = File.ReadAllLines(logFilePath).ToList();
         List<string> result = logs.Skip(Math.Max(0, logs.Count - lines)).ToList();
         return result;

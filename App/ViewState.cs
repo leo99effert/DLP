@@ -4,6 +4,8 @@
     Exit,
     Session,
     ProdLog,
+    DebugLog,
+    ErrorLog,
     Countries,
     LoggingIn,
     AlreadyLoggedIn,

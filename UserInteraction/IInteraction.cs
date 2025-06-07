@@ -3,6 +3,6 @@
     public Log Log { get; }
     void DisplayView(ViewState viewState, Session session);
     void PromptLogin();
-    Action GetAction(Session session);
+    T GetInput<T>() where T : Enum;
     string ReadUsername();
 }
