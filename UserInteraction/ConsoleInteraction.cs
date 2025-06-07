@@ -2,34 +2,55 @@
 {
     public Log Log { get; }
     public int CurrentMenuOption { get; private set; }
-    private int _actionDisplayLength = Enum.GetNames(typeof(Action)).Max(action => action.Length);
-    private ConsoleColor _defaultTextColor = Console.ForegroundColor;
-    private ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
-    private int ViewHeight = 12;
-    private int ViewWidth = (Enum.GetNames(typeof(Action)).Max(action => action.Length) + 2) * Enum.GetNames(typeof(Action)).Length - 2;
+    private readonly ConsoleColor _defaultTextColor = Console.ForegroundColor;
+    private readonly ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
+    private readonly List<Type> _menuTypes = new List<Type> { typeof(Action), typeof(LogType) };
+    private readonly int _viewHeight = 12;
+    private int ViewWidth => GetViewWidth();
+    private int MenuItemDisplayLength => GetMenuItemDisplayLength();
 
     public ConsoleInteraction(Log log)
     {
         Log = log;
     }
+
+    private int GetViewWidth()
+    {
+        List<int> menuLengths = new List<int>();
+        foreach (Type type in _menuTypes)
+        {
+            menuLengths.Add((Enum.GetNames(type).Max(item => item.Length) + 2) * Enum.GetNames(type).Length - 2);
+        }
+        return menuLengths.Max();
+    }
+
+    private int GetMenuItemDisplayLength()
+    {
+        List<int> menuItemLengths = new List<int>();
+        foreach (Type type in _menuTypes)
+        {
+            menuItemLengths.Add(Enum.GetNames(type).Max(item => item.Length));
+        }
+        return menuItemLengths.Max();
+    }
     public void DisplayView(ViewState viewState, Session session)
     {
         Console.Clear();
-        Console.WriteLine($"┌{new string('─', ViewWidth)}┐");
+        Display($"┌{new string('─', ViewWidth)}┐" + Environment.NewLine);
         List<string> lines = GetLinesToDisplay(viewState, session);
-        for (int i = 0; i < ViewHeight; i++)
+        for (int i = 0; i < _viewHeight; i++)
         {
             if (i < lines.Count)
             {
                 string line = lines[i].PadRight(ViewWidth);
-                Console.WriteLine($"│{line}│");
+                Display($"│{line}│" + Environment.NewLine);
             }
             else
             {
-                Console.WriteLine($"│{new string(' ', ViewWidth)}│");
+                Display($"│{new string(' ', ViewWidth)}│" + Environment.NewLine);
             }
         }
-        Console.WriteLine($"└{new string('─', ViewWidth)}┘");
+        Display($"└{new string('─', ViewWidth)}┘" + Environment.NewLine);
     }
 
     private List<string> GetLinesToDisplay(ViewState viewState, Session session) => viewState switch
@@ -83,14 +104,14 @@
 
     private void DisplayMenuTop<T>() where T : Enum
     {
-        Console.SetCursorPosition(0, ViewHeight + 2);
+        Console.SetCursorPosition(0, _viewHeight + 2);
         foreach (T value in Enum.GetValues(typeof(T)))
         {
             if (Convert.ToInt32(value) == CurrentMenuOption)
             {
                 ApplyHighlightTextColor();
             }
-            string text = "┌" + new string('─', _actionDisplayLength) + "┐";
+            string text = "┌" + new string('─', MenuItemDisplayLength) + "┐";
             Display(text);
             ApplyDefaultTextColor();
         }
@@ -103,7 +124,7 @@
             {
                 ApplyHighlightTextColor();
             }
-            string displayAction = value.ToString().PadRight(_actionDisplayLength);
+            string displayAction = value.ToString().PadRight(MenuItemDisplayLength);
             string text = $"│{displayAction}│";
             Display(text);
             ApplyDefaultTextColor();
@@ -117,7 +138,7 @@
             {
                 ApplyHighlightTextColor();
             }
-            string text = "└" + new string('─', _actionDisplayLength) + "┘";
+            string text = "└" + new string('─', MenuItemDisplayLength) + "┘";
             Display(text);
             ApplyDefaultTextColor();
         }
@@ -144,7 +165,7 @@
     {
         int menuLeftPosition = 1;
         int menuTopPosition = 1;
-        int menuHeight = ViewHeight;
+        int menuHeight = _viewHeight;
         int menuWidth = ViewWidth;
         ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
     }
@@ -152,7 +173,7 @@
     private void HideMenu()
     {
         int menuLeftPosition = 0;
-        int menuTopPosition = ViewHeight + 2;
+        int menuTopPosition = _viewHeight + 2;
         int menuHeight = 3;
         int menuWidth = ViewWidth + 2;
         ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
@@ -180,9 +201,10 @@
 
     public T GetInput<T>() where T : Enum
     {
+        CurrentMenuOption = 0;
         while (true)
         {
-            Console.SetCursorPosition(0, ViewHeight + 2);
+            Console.SetCursorPosition(0, _viewHeight + 2);
             DisplayMenu<T>();
             ConsoleNavigateAction navigateAction = GetConsoleNavigateAction();
             if (navigateAction == ConsoleNavigateAction.PickOption)

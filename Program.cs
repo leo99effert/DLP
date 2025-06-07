@@ -6,8 +6,8 @@ Application application = new Application(interaction, session);
 application.Run();
 Console.ReadKey();
 
-// TODO: Ability to pick which log to see
 // TODO: Imlement countries view
 // TODO: Remove camelCase from menu actions
 // TODO: Login failed if empty username or with whitespace
-// TODO: Get longest enum for dynamic menu clearing
+// TODO: Login using ConsoleInteraction not Application
+// TODO: Put methods in right order

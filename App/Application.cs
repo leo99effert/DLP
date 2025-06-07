@@ -7,7 +7,7 @@
     public ViewState ViewState { get; private set; } = ViewState.Welcome;
     public List<Action> ActionsThatRequireSubActions { get; set; } = new List<Action>
     {
-        //Action.ReadLog,
+        Action.ReadLog,
         Action.Login,
         Action.Logout
     };
@@ -91,16 +91,16 @@
         T value = Interaction.GetInput<T>();
         if (!Enum.IsDefined(typeof(T), value))
         {
-            Log.WriteToLog(LogType.Error, $"Invalid action selected: {value}");
-            throw new ArgumentOutOfRangeException(nameof(value), value, $"Action {value} was not found");
+            Log.WriteToLog(LogType.Error, $"Invalid option selected: {value}");
+            throw new ArgumentOutOfRangeException(nameof(value), value, $"Option {value} was not found");
         }
         return value;
     }
 
     private void ViewLog()
     {
-        LogType logtype = MenuSelection<LogType>();
-        switch (logtype)
+        LogType logType = MenuSelection<LogType>();
+        switch (logType)
         {
             case LogType.Prod:
                 ViewState = ViewState.ProdLog;
@@ -112,7 +112,9 @@
                 ViewState = ViewState.ErrorLog;
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(logtype), logtype, $"Logtype {logtype} was not found");
+                throw new ArgumentOutOfRangeException(nameof(logType), logType, $"Logtype {logType} was not found");
         }
+        string log = $"Action performed: read {logType}-log, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
+        Log.WriteToLog(LogType.Prod, log);
     }
 }
