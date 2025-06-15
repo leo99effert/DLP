@@ -17,14 +17,14 @@
         Session = session;
     }
 
-    public void Run()
+    public async Task Run()
     {
-        Interaction.DisplayView(ViewState, Session);
+        await Interaction.DisplayView(ViewState, Session);
         while (!IsShutdownInitiated)
         {
             Action action = MenuSelection<Action>();
             PerformAction(action);
-            Interaction.DisplayView(ViewState, Session);
+            await Interaction.DisplayView(ViewState, Session);
         }
     }
 

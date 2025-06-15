@@ -1,6 +1,7 @@
 ﻿internal class ConsoleInteraction : IInteraction
 {
     public Log Log { get; }
+    public List<IData> Data { get; set; }
     public int CurrentMenuOption { get; private set; }
     private readonly ConsoleColor _defaultTextColor = Console.ForegroundColor;
     private readonly ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
@@ -9,9 +10,10 @@
     private int ViewWidth => GetViewWidth();
     private int MenuItemDisplayLength => GetMenuItemDisplayLength();
 
-    public ConsoleInteraction(Log log)
+    public ConsoleInteraction(Log log, List<IData> data)
     {
         Log = log;
+        Data = data;
     }
 
     private int GetViewWidth()
@@ -33,11 +35,11 @@
         }
         return menuItemLengths.Max();
     }
-    public void DisplayView(ViewState viewState, Session session)
+    public async Task DisplayView(ViewState viewState, Session session)
     {
         Console.Clear();
         Display($"┌{new string('─', ViewWidth)}┐" + Environment.NewLine);
-        List<string> lines = GetLinesToDisplay(viewState, session);
+        List<string> lines = await GetLinesToDisplay(viewState, session);
         for (int i = 0; i < _viewHeight; i++)
         {
             if (i < lines.Count)
@@ -53,10 +55,10 @@
         Display($"└{new string('─', ViewWidth)}┘" + Environment.NewLine);
     }
 
-    private List<string> GetLinesToDisplay(ViewState viewState, Session session) => viewState switch
+    private async Task<List<string>> GetLinesToDisplay(ViewState viewState, Session session) => viewState switch
     {
         ViewState.Welcome => WelcomeText(),
-        ViewState.Countries => CountriesText(),
+        ViewState.Countries => await CountriesText(),
         ViewState.Session => SessionText(session),
         ViewState.ProdLog => LogText(LogType.Prod, 10),
         ViewState.DebugLog => LogText(LogType.Debug, 10),
@@ -74,7 +76,12 @@
         Console.Write(text);
     }
     private List<string> WelcomeText() => new List<string> { "Welcome to DLP!" };
-    private List<string> CountriesText() => new List<string> { "Not implemented yet" };
+    private async Task<List<string>> CountriesText()
+    {
+        Countries model = Data.OfType<Countries>().FirstOrDefault();
+        List<Country> countries = await model.Get();
+        return countries.Select(country => country.Name).ToList();
+    }
     private List<string> SessionText(Session session)
     {
         return new List<string>
