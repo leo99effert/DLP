@@ -2,11 +2,9 @@
 
 internal class Countries : IData<Country>
 {
-    public Log Log { get; set; }
     public string Url { get; set; }
-    public Countries(Log log, string url)
+    public Countries(string url)
     {
-        Log = log;
         Url = url;
     }
     public async Task<List<Country>> Get()
@@ -19,7 +17,6 @@ internal class Countries : IData<Country>
         }
         catch (Exception ex)
         {
-            Log.WriteToLog(LogType.Error, $"Error fetching countries");
             throw new Exception($"Error fetching countries: {ex.Message}", ex);
         }
     }
@@ -36,6 +33,6 @@ internal class Countries : IData<Country>
     }
     private static List<Country> ConvertDtoToModel(List<DLP.DTO.Country>? countriesDTO)
     {
-        return countriesDTO.Take(10).Select(dto => new Country { Name = dto.Name.Common }).ToList();
+        return countriesDTO!.Take(10).Select(dto => new Country { Name = dto.Name.Common }).ToList();
     }
 }

@@ -1,14 +1,11 @@
-﻿Log log = new Log();
-Session session = new Session(log);
-
+﻿IInteraction interaction = new ConsoleInteraction();
+Session session = new Session();
+Log log = new Log();
 List<IData> data = new List<IData>
 {
-    new Countries(log, "https://restcountries.com/v3.1/all?fields=name")
+    new Countries("https://restcountries.com/v3.1/all?fields=name")
 };
 
-IInteraction interaction = new ConsoleInteraction(log, data);
-
-
-Application application = new Application(interaction, session);
+Application application = new Application(interaction, session, log, data);
 await application.Run();
 Console.ReadKey();

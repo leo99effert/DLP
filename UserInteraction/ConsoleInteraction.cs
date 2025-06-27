@@ -1,31 +1,21 @@
 ﻿internal class ConsoleInteraction : IInteraction
 {
-    public Log Log { get; }
-    public List<IData> Data { get; set; }
     public int CurrentMenuOption { get; private set; }
+    private int MenuItemDisplayLength => GetMenuItemDisplayLength();
+    private int ViewWidth => GetViewWidth();
+    private readonly int _viewHeight = 12;
+    private readonly List<Type> _menuTypes = new List<Type> { typeof(Action), typeof(LogType) };
     private readonly ConsoleColor _defaultTextColor = Console.ForegroundColor;
     private readonly ConsoleColor _highlightedTextColor = ConsoleColor.Blue;
-    private readonly List<Type> _menuTypes = new List<Type> { typeof(Action), typeof(LogType) };
-    private readonly int _viewHeight = 12;
-    private int ViewWidth => GetViewWidth();
-    private int MenuItemDisplayLength => GetMenuItemDisplayLength();
 
-    public ConsoleInteraction(Log log, List<IData> data)
+
+    private void Display(string text)
     {
-        Log = log;
-        Data = data;
+        Console.Write(text);
     }
 
-    private int GetViewWidth()
-    {
-        List<int> menuLengths = new List<int>();
-        foreach (Type type in _menuTypes)
-        {
-            menuLengths.Add((Enum.GetNames(type).Max(item => item.Length) + 2) * Enum.GetNames(type).Length - 2);
-        }
-        return menuLengths.Max();
-    }
 
+    // --- Get widths below ---
     private int GetMenuItemDisplayLength()
     {
         List<int> menuItemLengths = new List<int>();
@@ -35,70 +25,82 @@
         }
         return menuItemLengths.Max();
     }
-    public async Task DisplayView(ViewState viewState, Session session)
+    private int GetViewWidth()
     {
-        Console.Clear();
-        Display($"┌{new string('─', ViewWidth)}┐" + Environment.NewLine);
-        List<string> lines = await GetLinesToDisplay(viewState, session);
-        for (int i = 0; i < _viewHeight; i++)
+        List<int> menuLengths = new List<int>();
+        foreach (Type type in _menuTypes)
         {
-            if (i < lines.Count)
+            menuLengths.Add((Enum.GetNames(type).Max(item => item.Length) + 2) * Enum.GetNames(type).Length - 2);
+        }
+        return menuLengths.Max();
+    }
+    // --- Get widths above ---
+
+    // --- None-standard interaction below ---
+    public void PromptLogin()
+    {
+        ClearViewWindow();
+        HideMenu();
+        Console.SetCursorPosition(1, 1);
+        Display("Enter username: ");
+    }
+    public string ReadUsername()
+    {
+        string input = Console.ReadLine()!;
+        Console.Clear();
+        return input;
+    }
+    // --- None-standard interaction above ---
+
+    // --- Interact with menu below ---
+    public T GetInput<T>() where T : Enum
+    {
+        CurrentMenuOption = 0;
+        while (true)
+        {
+            Console.SetCursorPosition(0, _viewHeight + 2);
+            DisplayMenu<T>();
+            ConsoleNavigateAction navigateAction = GetConsoleNavigateAction();
+            if (navigateAction == ConsoleNavigateAction.PickOption)
             {
-                string line = lines[i].PadRight(ViewWidth);
-                Display($"│{line}│" + Environment.NewLine);
+                return (T)Enum.ToObject(typeof(T), CurrentMenuOption);
             }
-            else
+            else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
             {
-                Display($"│{new string(' ', ViewWidth)}│" + Environment.NewLine);
+                CurrentMenuOption--;
+            }
+            else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
+            {
+                CurrentMenuOption--;
+            }
+            else if (navigateAction == ConsoleNavigateAction.Right && (CurrentMenuOption < Enum.GetNames(typeof(T)).Length - 1))
+            {
+                CurrentMenuOption++;
             }
         }
-        Display($"└{new string('─', ViewWidth)}┘" + Environment.NewLine);
     }
-
-    private async Task<List<string>> GetLinesToDisplay(ViewState viewState, Session session) => viewState switch
+    private ConsoleNavigateAction GetConsoleNavigateAction()
     {
-        ViewState.Welcome => WelcomeText(),
-        ViewState.Countries => await CountriesText(),
-        ViewState.Session => SessionText(session),
-        ViewState.ProdLog => LogText(LogType.Prod, 10),
-        ViewState.DebugLog => LogText(LogType.Debug, 10),
-        ViewState.ErrorLog => LogText(LogType.Error, 10),
-        ViewState.LoggingIn => LoggingInText(),
-        ViewState.AlreadyLoggedIn => AlreadyLoggedInText(session),
-        ViewState.LoggingOut => LoggingOutText(),
-        ViewState.NotLoggedIn => NotLoggedInText(),
-        ViewState.Exit => ExitText(),
-        _ => new List<string> { "Unknown view state." }
-    };
-
-    private void Display(string text)
-    {
-        Console.Write(text);
-    }
-    private List<string> WelcomeText() => new List<string> { "Welcome to DLP!" };
-    private async Task<List<string>> CountriesText()
-    {
-        Countries model = Data.OfType<Countries>().FirstOrDefault();
-        List<Country> countries = await model.Get();
-        return countries.Select(country => country.Name).ToList();
-    }
-    private List<string> SessionText(Session session)
-    {
-        return new List<string>
+        while (true)
         {
-            $"Session start: {session.SessionStartTime}",
-            session.IsLoggedIn ? $"Username: {session.User?.Username}" : "Not logged in",
-            session.IsLoggedIn ? $"User ID: {session.User?.Id}" : "",
-            session.IsLoggedIn ? $"Login time: {session.LoginTime}" : ""
-        };
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            if (keyInfo.Key == ConsoleKey.LeftArrow)
+            {
+                return ConsoleNavigateAction.Left;
+            }
+            if (keyInfo.Key == ConsoleKey.RightArrow)
+            {
+                return ConsoleNavigateAction.Right;
+            }
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                return ConsoleNavigateAction.PickOption;
+            }
+        }
     }
-    private List<string> LogText(LogType logType, int lines) => Log.ReadLog(logType, lines);
-    private List<string> LoggingInText() => new List<string> { "Logging in..." };
-    private List<string> AlreadyLoggedInText(Session session) => new List<string> { $"{session.User!.Username} already logged in." };
-    private List<string> LoggingOutText() => new List<string> { "Loggin out..." };
-    private List<string> NotLoggedInText() => new List<string> { "Not logged in." };
-    private List<string> ExitText() => new List<string> { "Exiting DLP..." };
+    // --- Interact with menu above ---
 
+    // --- Print menu below ---
     private void DisplayMenu<T>() where T : Enum
     {
         HideMenu();
@@ -108,7 +110,6 @@
         Display(Environment.NewLine);
         DisplayMenuBottom<T>();
     }
-
     private void DisplayMenuTop<T>() where T : Enum
     {
         Console.SetCursorPosition(0, _viewHeight + 2);
@@ -154,38 +155,13 @@
     {
         Console.ForegroundColor = _defaultTextColor;
     }
-
     private void ApplyHighlightTextColor()
     {
         Console.ForegroundColor = _highlightedTextColor;
     }
+    // --- Print menu above ---
 
-    public void PromptLogin()
-    {
-        ClearViewWindow();
-        HideMenu();
-        Console.SetCursorPosition(1, 1);
-        Display("Enter username: ");
-    }
-
-    private void ClearViewWindow()
-    {
-        int menuLeftPosition = 1;
-        int menuTopPosition = 1;
-        int menuHeight = _viewHeight;
-        int menuWidth = ViewWidth;
-        ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
-    }
-
-    private void HideMenu()
-    {
-        int menuLeftPosition = 0;
-        int menuTopPosition = _viewHeight + 2;
-        int menuHeight = 3;
-        int menuWidth = ViewWidth + 2;
-        ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
-    }
-
+    // --- Clear section below ---
     private void ClearSection(int left, int top, int height, int width)
     {
         Console.SetCursorPosition(left, top);
@@ -198,57 +174,93 @@
             }
         }
     }
-
-    public string ReadUsername()
+    private void ClearViewWindow()
     {
-        string input = Console.ReadLine()!;
+        int menuLeftPosition = 1;
+        int menuTopPosition = 1;
+        int menuHeight = _viewHeight;
+        int menuWidth = ViewWidth;
+        ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
+    }
+    private void HideMenu()
+    {
+        int menuLeftPosition = 0;
+        int menuTopPosition = _viewHeight + 2;
+        int menuHeight = 3;
+        int menuWidth = ViewWidth + 2;
+        ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
+    }
+    // --- Clear section above ---
+
+    // --- Display scenarios below ---
+    private void DisplayView(List<string> lines)
+    {
         Console.Clear();
-        return input;
-    }
-
-    public T GetInput<T>() where T : Enum
-    {
-        CurrentMenuOption = 0;
-        while (true)
+        Display($"┌{new string('─', ViewWidth)}┐" + Environment.NewLine);
+        for (int i = 0; i < _viewHeight; i++)
         {
-            Console.SetCursorPosition(0, _viewHeight + 2);
-            DisplayMenu<T>();
-            ConsoleNavigateAction navigateAction = GetConsoleNavigateAction();
-            if (navigateAction == ConsoleNavigateAction.PickOption)
+            if (i < lines.Count)
             {
-                return (T)Enum.ToObject(typeof(T), CurrentMenuOption);
+                string line = lines[i].PadRight(ViewWidth);
+                Display($"│{line}│" + Environment.NewLine);
             }
-            else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
+            else
             {
-                CurrentMenuOption--;
-            }
-            else if (navigateAction == ConsoleNavigateAction.Left && (CurrentMenuOption > 0))
-            {
-                CurrentMenuOption--;
-            }
-            else if (navigateAction == ConsoleNavigateAction.Right && (CurrentMenuOption < Enum.GetNames(typeof(T)).Length - 1))
-            {
-                CurrentMenuOption++;
+                Display($"│{new string(' ', ViewWidth)}│" + Environment.NewLine);
             }
         }
+        Display($"└{new string('─', ViewWidth)}┘" + Environment.NewLine);
     }
-    public ConsoleNavigateAction GetConsoleNavigateAction()
+    public void Home()
     {
-        while (true)
-        {
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            if (keyInfo.Key == ConsoleKey.LeftArrow)
-            {
-                return ConsoleNavigateAction.Left;
-            }
-            if (keyInfo.Key == ConsoleKey.RightArrow)
-            {
-                return ConsoleNavigateAction.Right;
-            }
-            if (keyInfo.Key == ConsoleKey.Enter)
-            {
-                return ConsoleNavigateAction.PickOption;
-            }
-        }
+        List<string> lines = new List<string> { "Welcome to DLP!" };
+        DisplayView(lines);
     }
+    public void Countries(List<Country> countries)
+    {
+        List<string> lines = countries.Select(country => country.Name).ToList();
+        DisplayView(lines);
+    }
+    public void Session(Session session)
+    {
+        List<string> lines = new List<string>
+        {
+            $"Session start: {session.SessionStartTime}",
+            session.IsLoggedIn ? $"Username: {session.User?.Username}" : "Not logged in",
+            session.IsLoggedIn ? $"User ID: {session.User?.Id}" : "",
+            session.IsLoggedIn ? $"Login time: {session.LoginTime}" : ""
+        };
+        DisplayView(lines);
+    }
+    public void ReadLog(Log log, LogType logType)
+    {
+        List<string> lines = log.ReadLog(logType, 10);
+        DisplayView(lines);
+    }
+    public void AlreadyLoggedIn(string username)
+    {
+        List<string> lines = new List<string> { $"{username} already logged in." };
+        DisplayView(lines);
+    }
+    public void LoggingIn()
+    {
+        List<string> lines = new List<string> { "Logging in..." };
+        DisplayView(lines);
+    }
+    public void NotLoggedIn()
+    {
+        List<string> lines = new List<string> { "Not logged in." };
+        DisplayView(lines);
+    }
+    public void LoggingOut()
+    {
+        List<string> lines = new List<string> { "Loggin out..." };
+        DisplayView(lines);
+    }
+    public void Exit()
+    {
+        List<string> lines = new List<string> { "Exiting DLP..." };
+        DisplayView(lines);
+    }
+    // --- Display scenarios above --- 
 }
