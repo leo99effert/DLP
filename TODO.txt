@@ -1,0 +1,8 @@
+﻿Remove camelCase from menu actions
+Login failed if empty username or with whitespace
+Login using ConsoleInteraction not Application
+Put methods in right order
+Display asyncronously
+Move data fetching from ConsoleInteraction to Application
+Move Console Application
+Remove "ViewState"
