@@ -9,15 +9,7 @@
     string ReadUsername();
     // --- None-standard interaction above ---
 
-    // --- Scenarios to display below ---
-    void Home();
-    void Countries(List<Country> countries);
-    void Session(Session session);
-    void ReadLog(List<string> logLines);
-    void AlreadyLoggedIn(string username);
-    void LoggingIn();
-    void NotLoggedIn();
-    void LoggingOut();
-    void Exit();
-    // --- Scenarios to display above ---
+    // --- Display scenarios below ---
+    void DisplayView(List<string> lines);
+    // --- Display scenarios above ---
 }

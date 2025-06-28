@@ -161,6 +161,27 @@
     }
     // --- Print menu above ---
 
+    // --- Print view below ---
+    public void DisplayView(List<string> lines)
+    {
+        Console.Clear();
+        Display($"┌{new string('─', ViewWidth)}┐" + Environment.NewLine);
+        for (int i = 0; i < _viewHeight; i++)
+        {
+            if (i < lines.Count)
+            {
+                string line = lines[i].PadRight(ViewWidth);
+                Display($"│{line}│" + Environment.NewLine);
+            }
+            else
+            {
+                Display($"│{new string(' ', ViewWidth)}│" + Environment.NewLine);
+            }
+        }
+        Display($"└{new string('─', ViewWidth)}┘" + Environment.NewLine);
+    }
+    // --- Print view above --- 
+
     // --- Clear section below ---
     private void ClearSection(int left, int top, int height, int width)
     {
@@ -191,75 +212,4 @@
         ClearSection(menuLeftPosition, menuTopPosition, menuHeight, menuWidth);
     }
     // --- Clear section above ---
-
-    // --- Display scenarios below ---
-    private void DisplayView(List<string> lines)
-    {
-        Console.Clear();
-        Display($"┌{new string('─', ViewWidth)}┐" + Environment.NewLine);
-        for (int i = 0; i < _viewHeight; i++)
-        {
-            if (i < lines.Count)
-            {
-                string line = lines[i].PadRight(ViewWidth);
-                Display($"│{line}│" + Environment.NewLine);
-            }
-            else
-            {
-                Display($"│{new string(' ', ViewWidth)}│" + Environment.NewLine);
-            }
-        }
-        Display($"└{new string('─', ViewWidth)}┘" + Environment.NewLine);
-    }
-    public void Home()
-    {
-        List<string> lines = new List<string> { "Welcome to DLP!" };
-        DisplayView(lines);
-    }
-    public void Countries(List<Country> countries)
-    {
-        List<string> lines = countries.Select(country => country.Name).ToList();
-        DisplayView(lines);
-    }
-    public void Session(Session session)
-    {
-        List<string> lines = new List<string>
-        {
-            $"Session start: {session.SessionStartTime}",
-            session.IsLoggedIn ? $"Username: {session.User?.Username}" : "Not logged in",
-            session.IsLoggedIn ? $"User ID: {session.User?.Id}" : "",
-            session.IsLoggedIn ? $"Login time: {session.LoginTime}" : ""
-        };
-        DisplayView(lines);
-    }
-    public void ReadLog(List<string> logLines)
-    {
-        DisplayView(logLines);
-    }
-    public void AlreadyLoggedIn(string username)
-    {
-        List<string> lines = new List<string> { $"{username} already logged in." };
-        DisplayView(lines);
-    }
-    public void LoggingIn()
-    {
-        List<string> lines = new List<string> { "Logging in..." };
-        DisplayView(lines);
-    }
-    public void NotLoggedIn()
-    {
-        List<string> lines = new List<string> { "Not logged in." };
-        DisplayView(lines);
-    }
-    public void LoggingOut()
-    {
-        List<string> lines = new List<string> { "Loggin out..." };
-        DisplayView(lines);
-    }
-    public void Exit()
-    {
-        List<string> lines = new List<string> { "Exiting DLP..." };
-        DisplayView(lines);
-    }
-    // --- Display scenarios above --- 
 }

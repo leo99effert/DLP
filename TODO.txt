@@ -1,6 +1,5 @@
-﻿Put methods in right order
-Move Console Application
+﻿Move Console Application
 Remove camelCase from menu actions
 Login failed if empty username or with whitespace
 Move login and logout to Session class
-Collect the data in Application instead of in ConsoleInteraction
+Guess countries

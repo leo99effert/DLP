@@ -1,5 +1,4 @@
-﻿
-internal class Country
+﻿internal class Country
 {
     public string Name { get; set; }
 }
