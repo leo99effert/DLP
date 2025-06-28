@@ -232,10 +232,9 @@
         };
         DisplayView(lines);
     }
-    public void ReadLog(Log log, LogType logType)
+    public void ReadLog(List<string> logLines)
     {
-        List<string> lines = log.ReadLog(logType, 10);
-        DisplayView(lines);
+        DisplayView(logLines);
     }
     public void AlreadyLoggedIn(string username)
     {

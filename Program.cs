@@ -6,6 +6,6 @@ List<IData> data = new List<IData>
     new Countries("https://restcountries.com/v3.1/all?fields=name")
 };
 
-Application application = new Application(interaction, session, log, data);
+Application application = new Application(interaction, session, data);
 await application.Run();
 Console.ReadKey();

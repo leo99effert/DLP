@@ -13,7 +13,7 @@
     void Home();
     void Countries(List<Country> countries);
     void Session(Session session);
-    void ReadLog(Log log, LogType logType);
+    void ReadLog(List<string> logLines);
     void AlreadyLoggedIn(string username);
     void LoggingIn();
     void NotLoggedIn();

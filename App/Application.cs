@@ -1,15 +1,13 @@
-﻿internal class Application
+﻿internal class Application : Log
 {
     public bool IsShutdownInitiated { get; private set; }
     public IInteraction Interaction { get; }
     public Session Session { get; }
-    public Log Log { get; }
     public List<IData> Data { get; set; }
-    public Application(IInteraction interaction, Session session, Log log, List<IData> data)
+    public Application(IInteraction interaction, Session session, List<IData> data)
     {
         Interaction = interaction;
         Session = session;
-        Log = log;
         Data = data;
     }
 
@@ -49,11 +47,11 @@
                 IsShutdownInitiated = true;
                 break;
             default:
-                Log.WriteToLog(LogType.Error, $"Invalid action selected: {action}");
+                WriteToLog(LogType.Error, $"Invalid action selected: {action}");
                 throw new ArgumentOutOfRangeException(nameof(action), action, $"Action {action} was not found");
         }
         string log = $"Action performed: {action}, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
-        Log.WriteToLog(LogType.Prod, log);
+        WriteToLog(LogType.Prod, log);
     }
 
     private void Login()
@@ -85,7 +83,7 @@
         T value = Interaction.GetInput<T>();
         if (!Enum.IsDefined(typeof(T), value))
         {
-            Log.WriteToLog(LogType.Error, $"Invalid option selected: {value}");
+            WriteToLog(LogType.Error, $"Invalid option selected: {value}");
             throw new ArgumentOutOfRangeException(nameof(value), value, $"Option {value} was not found");
         }
         return value;
@@ -94,8 +92,9 @@
     private void ViewLog()
     {
         LogType logType = MenuSelection<LogType>();
-        Interaction.ReadLog(Log, logType);
+        List<string> lines = ReadLog(logType, 10);
+        Interaction.ReadLog(lines);
         string log = $"Action performed: read {logType}-log, by " + (Session.IsLoggedIn ? Session.User!.Username : "guest");
-        Log.WriteToLog(LogType.Prod, log);
+        WriteToLog(LogType.Prod, log);
     }
 }
