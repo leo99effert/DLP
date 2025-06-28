@@ -3,6 +3,7 @@
     internal class Country
     {
         public CountryName Name { get; set; }
+        public List<string> Capital { get; set; }
     }
     internal class CountryName
     {

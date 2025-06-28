@@ -33,6 +33,9 @@ internal class Countries : IData<Country>
     }
     private static List<Country> ConvertDtoToModel(List<DLP.DTO.Country>? countriesDTO)
     {
-        return countriesDTO!.Take(10).Select(dto => new Country { Name = dto.Name.Common }).ToList();
+        return countriesDTO!.Take(10).Select(dto => new Country {
+            Name = dto.Name.Common,
+            Capital = dto.Capital.Count > 0 ? dto.Capital[0] : "No capital available"
+        }).ToList();
     }
 }

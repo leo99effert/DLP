@@ -2,11 +2,11 @@
 {
     // --- Interact with menu below ---
     T GetInput<T>() where T : Enum;
+    string GetString();
     // --- Interact with menu above ---
 
     // --- None-standard interaction below ---
     void PromptLogin();
-    string ReadUsername();
     // --- None-standard interaction above ---
 
     // --- Display scenarios below ---

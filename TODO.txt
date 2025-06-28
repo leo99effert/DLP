@@ -1,5 +1,3 @@
-﻿Move Console Application
-Remove camelCase from menu actions
-Login failed if empty username or with whitespace
-Move login and logout to Session class
+﻿Search countries by name/capital
 Guess countries
+Move Console Application

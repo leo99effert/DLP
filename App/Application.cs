@@ -37,23 +37,13 @@
         switch (action)
         {
             case Action.ReadCountries:
-                Countries model = Data.OfType<Countries>().FirstOrDefault()!;
-                List<Country> countries = await model.Get();
-                List<string> lines = countries.Select(country => country.Name).ToList();
-                Interaction.DisplayView(lines);
+                await ReadCountries();
                 break;
             case Action.ViewSession:
-                List<string> logLines = new List<string>
-                {
-                    $"Session start: {Session.SessionStartTime}",
-                    Session.IsLoggedIn ? $"Username: {Session.User?.Username}" : "Not logged in",
-                    Session.IsLoggedIn ? $"User ID: {Session.User?.Id}" : "",
-                    Session.IsLoggedIn ? $"Login time: {Session.LoginTime}" : ""
-                };
-                Interaction.DisplayView(logLines);
+                ViewSession();
                 break;
             case Action.ReadLog:
-                ViewLog();
+                ReadLog();
                 break;
             case Action.Login:
                 Login();
@@ -62,8 +52,7 @@
                 Logout();
                 break;
             case Action.Exit:
-                Interaction.DisplayView(new List<string> { "Exiting DLP..." });
-                IsShutdownInitiated = true;
+                Exit();
                 break;
             default:
                 WriteToLog(LogType.Error, $"Invalid action selected: {action}");
@@ -75,7 +64,25 @@
     // --- Main loop above ---
 
     // --- Action methods below ---
-    private void ViewLog()
+    private async Task ReadCountries()
+    {
+        Countries model = Data.OfType<Countries>().FirstOrDefault()!;
+        List<Country> countries = await model.Get();
+        List<string> lines = countries.Select(country => country.Name + ", " + country.Capital).ToList();
+        Interaction.DisplayView(lines);
+    }
+    private void ViewSession()
+    {
+        List<string> logLines = new List<string>
+                {
+                    $"Session start: {Session.SessionStartTime}",
+                    Session.IsLoggedIn ? $"Username: {Session.User?.Username}" : "Not logged in",
+                    Session.IsLoggedIn ? $"User ID: {Session.User?.Id}" : "",
+                    Session.IsLoggedIn ? $"Login time: {Session.LoginTime}" : ""
+                };
+        Interaction.DisplayView(logLines);
+    }
+    private void ReadLog()
     {
         LogType logType = MenuSelection<LogType>();
         List<string> lines = ReadLog(logType, 10);
@@ -91,7 +98,7 @@
             return;
         }
         Interaction.PromptLogin();
-        string username = Interaction.ReadUsername();
+        string username = Interaction.GetString();
         Interaction.DisplayView(new List<string> { "Logging in..." });
         Session.Login(new User(username));
     }
@@ -104,6 +111,11 @@
         }
         Interaction.DisplayView(new List<string> { "Loggin out..." });
         Session.Logout();
+    }
+    private void Exit()
+    {
+        Interaction.DisplayView(new List<string> { "Exiting DLP..." });
+        IsShutdownInitiated = true;
     }
     // --- Action methods above ---
 }

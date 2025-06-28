@@ -44,7 +44,7 @@
         Console.SetCursorPosition(1, 1);
         Display("Enter username: ");
     }
-    public string ReadUsername()
+    public string GetString()
     {
         string input = Console.ReadLine()!;
         Console.Clear();
